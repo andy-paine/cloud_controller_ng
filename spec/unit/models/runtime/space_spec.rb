@@ -385,7 +385,7 @@ module VCAP::CloudController
           end
         end
 
-        %w(developer manager auditor).each do |perm|
+        %w(developer manager auditor application_supporter).each do |perm|
           include_examples 'bad app space permission', perm
         end
       end
@@ -535,8 +535,8 @@ module VCAP::CloudController
 
     describe 'Serialization' do
       it { is_expected.to export_attributes :name, :organization_guid, :space_quota_definition_guid, :allow_ssh }
-      it { is_expected.to import_attributes :name, :organization_guid, :developer_guids, :manager_guids, :isolation_segment_guid,
-        :auditor_guids, :security_group_guids, :space_quota_definition_guid, :allow_ssh
+      it { is_expected.to import_attributes :name, :organization_guid, :developer_guids, :manager_guids, :application_supporter_guids,
+        :isolation_segment_guid, :auditor_guids, :security_group_guids, :space_quota_definition_guid, :allow_ssh
       }
     end
 
@@ -800,6 +800,11 @@ module VCAP::CloudController
         expect(space.has_member?(user)).to be true
       end
 
+      it 'returns true if the given user is a space application supporter' do
+        space.add_application_supporter(user)
+        expect(space.has_member?(user)).to be true
+      end
+
       it 'returns true if the given user is a space auditor' do
         space.add_auditor(user)
         expect(space.has_member?(user)).to be true
@@ -810,7 +815,7 @@ module VCAP::CloudController
         expect(space.has_member?(user)).to be true
       end
 
-      it 'returns false if the given user is not a manager, auditor, or developer' do
+      it 'returns false if the given user is not a manager, auditor, developer or application supporter' do
         expect(space.has_member?(user)).to be false
       end
 

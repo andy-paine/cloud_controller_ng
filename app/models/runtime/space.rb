@@ -30,6 +30,7 @@ module VCAP::CloudController
     define_user_group :developers, reciprocal: :spaces, before_add: :validate_developer
     define_user_group :managers, reciprocal: :managed_spaces, before_add: :validate_manager
     define_user_group :auditors, reciprocal: :audited_spaces, before_add: :validate_auditor
+    define_user_group :application_supporters, reciprocal: :application_supporter_spaces, before_add: :validate_application_supporter
 
     many_to_one :organization, before_set: :validate_change_organization
 
@@ -154,7 +155,7 @@ module VCAP::CloudController
 
     export_attributes :name, :organization_guid, :space_quota_definition_guid, :allow_ssh
 
-    import_attributes :name, :organization_guid, :developer_guids, :allow_ssh, :isolation_segment_guid,
+    import_attributes :name, :organization_guid, :developer_guids, :application_supporter_guids, :allow_ssh, :isolation_segment_guid,
       :manager_guids, :auditor_guids, :security_group_guids, :space_quota_definition_guid
 
     strip_attributes :name
@@ -195,7 +196,7 @@ module VCAP::CloudController
     end
 
     def has_member?(user)
-      has_developer?(user) || has_manager?(user) || has_auditor?(user)
+      has_developer?(user) || has_manager?(user) || has_auditor?(user) || has_application_supporter?(user)
     end
 
     def in_organization?(user)
@@ -304,6 +305,10 @@ module VCAP::CloudController
 
     def has_auditor?(user)
       user.present? && auditors_dataset.where(user_id: user.id).present?
+    end
+
+    def has_application_supporter?(user)
+      user.present? && application_supporters_dataset.where(user_id: user.id).present?
     end
 
     def memory_remaining

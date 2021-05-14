@@ -1040,6 +1040,13 @@ module VCAP::CloudController
         expect(permissions.can_read_route?(space_guid, org_guid)).to be true
       end
 
+      it 'returns true for space application supporter' do
+        org.add_user(user)
+        space.add_application_supporter(user)
+
+        expect(permissions.can_read_route?(space_guid, org_guid)).to be true
+      end
+
       it 'returns true for space manager' do
         org.add_user(user)
         space.add_manager(user)

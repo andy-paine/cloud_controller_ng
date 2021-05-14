@@ -174,6 +174,10 @@ class VCAP::CloudController::Permissions::Queryer
     end
   end
 
+  def untrusted_can_write_to_space?(space_guid)
+    db_permissions.untrusted_can_write_to_space?(space_guid)
+  end
+
   def can_update_space?(space_guid, org_guid)
     science 'can_update_space' do |e|
       e.context(space_guid: space_guid, org_guid: org_guid)

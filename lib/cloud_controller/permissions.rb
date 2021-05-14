@@ -48,13 +48,14 @@ class VCAP::CloudController::Permissions
     VCAP::CloudController::Membership::SPACE_DEVELOPER,
   ].freeze
 
+  ROLES_FOR_SPACE_APPLICATION_SUPPORTER_WRITING ||= [
+    VCAP::CloudController::Membership::SPACE_DEVELOPER,
+    VCAP::CloudController::Membership::SPACE_APPLICATION_SUPPORTER,
+  ].freeze
+
   ROLES_FOR_SPACE_UPDATING ||= [
     VCAP::CloudController::Membership::SPACE_MANAGER,
     VCAP::CloudController::Membership::ORG_MANAGER,
-  ].freeze
-
-  ROLES_FOR_ROUTE_WRITING ||= [
-    VCAP::CloudController::Membership::SPACE_DEVELOPER,
   ].freeze
 
   def initialize(user)
@@ -147,6 +148,13 @@ class VCAP::CloudController::Permissions
   def can_write_to_space?(space_guid)
     return true if can_write_globally?
     return false unless membership.has_any_roles?(ROLES_FOR_SPACE_WRITING, space_guid)
+
+    VCAP::CloudController::Space.find(guid: space_guid)&.organization&.active?
+  end
+
+  def untrusted_can_write_to_space?(space_guid)
+    return true if can_write_globally?
+    return false unless membership.has_any_roles?(ROLES_FOR_SPACE_APPLICATION_SUPPORTER_WRITING, space_guid)
 
     VCAP::CloudController::Space.find(guid: space_guid)&.organization&.active?
   end
