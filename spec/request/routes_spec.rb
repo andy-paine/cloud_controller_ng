@@ -1499,11 +1499,9 @@ RSpec.describe 'Routes Request' do
             }
             h['space_developer'] = {
               code: 422,
-              response_object: { fasd: 'afsd' }
             }
             h['space_application_supporter'] = {
               code: 422,
-              response_object: route_json
             }
             h.freeze
           end
