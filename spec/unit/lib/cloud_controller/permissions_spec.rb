@@ -169,7 +169,7 @@ module VCAP::CloudController
             with(Permissions::ORG_ROLES_FOR_READING_DOMAINS_FROM_ORGS).
             and_return([first_org_guid])
           allow(membership).to receive(:space_guids_for_roles).
-            with(Permissions::SPACE_ROLES).
+            with(Permissions::SPACE_ROLES_V3).
             and_return([space_guid])
           allow(Membership).to receive(:new).with(user).and_return(membership)
           allow(Space).to receive(:find).with(guid: space_guid).
