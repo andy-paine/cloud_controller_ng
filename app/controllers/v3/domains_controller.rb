@@ -56,7 +56,7 @@ class DomainsController < ApplicationController
     message = DomainShowMessage.new({ guid: hashed_params['guid'] })
     unprocessable!(message.errors.full_messages) unless message.valid?
 
-    domain = find_domain(message)
+    domain = find_application_supporter_domain(message)
     domain_not_found! unless domain
 
     check_route_params = to_route_list_params(query_params, domain)
@@ -163,6 +163,16 @@ class DomainsController < ApplicationController
 
   def find_domain(message)
     readable_org_guids = permission_queryer.readable_org_guids_for_domains
+    domain = DomainFetcher.fetch(
+      message,
+      readable_org_guids
+    ).first
+
+    domain
+  end
+
+  def find_application_supporter_domain(message)
+    readable_org_guids = permission_queryer.readable_application_supporter_org_guids_for_domains
     domain = DomainFetcher.fetch(
       message,
       readable_org_guids

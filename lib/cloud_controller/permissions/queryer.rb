@@ -84,6 +84,10 @@ class VCAP::CloudController::Permissions::Queryer
     end
   end
 
+  def readable_application_supporter_org_guids_for_domains
+    db_permissions.readable_application_supporter_org_guids_for_domains
+  end
+
   def readable_org_contents_org_guids
     science 'readable_org_contents_org_guids' do |e|
       e.use do

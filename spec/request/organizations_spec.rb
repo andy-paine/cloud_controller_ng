@@ -884,7 +884,7 @@ module VCAP::CloudController
             }
           end
 
-          it_behaves_like 'permissions for single object endpoint', ALL_PERMISSIONS + ['space_application_supporter']
+          it_behaves_like 'permissions for single object endpoint', ALL_PERMISSIONS
         end
 
         context 'when at least one non-internal shared domain exists' do
@@ -918,7 +918,7 @@ module VCAP::CloudController
             }
           end
 
-          it_behaves_like 'permissions for single object endpoint', ALL_PERMISSIONS + ['space_application_supporter']
+          it_behaves_like 'permissions for single object endpoint', ALL_PERMISSIONS
         end
       end
 
@@ -932,7 +932,7 @@ module VCAP::CloudController
           h.freeze
         end
 
-        it_behaves_like 'permissions for single object endpoint', ALL_PERMISSIONS + ['space_application_supporter']
+        it_behaves_like 'permissions for single object endpoint', ALL_PERMISSIONS
       end
 
       context 'when only tcp domains exist' do
@@ -945,7 +945,7 @@ module VCAP::CloudController
           h.freeze
         end
 
-        it_behaves_like 'permissions for single object endpoint', ALL_PERMISSIONS + ['space_application_supporter']
+        it_behaves_like 'permissions for single object endpoint', ALL_PERMISSIONS
       end
 
       context 'when no domains exist' do
@@ -956,7 +956,7 @@ module VCAP::CloudController
           h.freeze
         end
 
-        it_behaves_like 'permissions for single object endpoint', ALL_PERMISSIONS + ['space_application_supporter']
+        it_behaves_like 'permissions for single object endpoint', ALL_PERMISSIONS
       end
     end
 
