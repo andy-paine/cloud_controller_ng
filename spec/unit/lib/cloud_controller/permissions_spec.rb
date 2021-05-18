@@ -157,51 +157,38 @@ module VCAP::CloudController
 
     describe '#readable_org_guids_for_domains' do
       context 'when user has valid membership' do
-        it 'combines readable orgs for both org-scoped and space-scoped roles' do
-          first_org_guid = double(:first_org_guid)
-          second_org_guid = double(:second_org_guid)
-          space_guid = double(:space_guid)
+        let(:membership) { instance_double(Membership) }
+        let(:space_guid) { double(:space_guid) }
+        let(:first_org_guid) { double(:first_org_guid) }
+        let(:second_org_guid) { double(:second_org_guid) }
+
+        before do
           organization = double(:organization, guid: second_org_guid)
           space = double(:space, organization: organization)
 
-          membership = instance_double(Membership)
           allow(membership).to receive(:org_guids_for_roles).
             with(Permissions::ORG_ROLES_FOR_READING_DOMAINS_FROM_ORGS).
             and_return([first_org_guid])
-          allow(membership).to receive(:space_guids_for_roles).
-            with(Permissions::SPACE_ROLES).
-            and_return([space_guid])
           allow(Membership).to receive(:new).with(user).and_return(membership)
           allow(Space).to receive(:find).with(guid: space_guid).
             and_return(space)
+        end
+
+        it 'combines readable orgs for both org-scoped and space-scoped roles' do
+          allow(membership).to receive(:space_guids_for_roles).
+            with(Permissions::SPACE_ROLES).
+            and_return([space_guid])
 
           expect(permissions.readable_org_guids_for_domains).
             to contain_exactly(first_org_guid, second_org_guid)
         end
-      end
-    end
 
-    describe '#readable_application_supporter_org_guids_for_domains' do
-      context 'when user has valid membership' do
-        it 'combines readable orgs for both org-scoped and space-scoped roles' do
-          first_org_guid = double(:first_org_guid)
-          second_org_guid = double(:second_org_guid)
-          space_guid = double(:space_guid)
-          organization = double(:organization, guid: second_org_guid)
-          space = double(:space, organization: organization)
-
-          membership = instance_double(Membership)
-          allow(membership).to receive(:org_guids_for_roles).
-            with(Permissions::ORG_ROLES_FOR_READING_DOMAINS_FROM_ORGS).
-            and_return([first_org_guid])
+        it 'combines readable orgs for both org-scoped and space-scoped roles including application supporters' do
           allow(membership).to receive(:space_guids_for_roles).
-            with(Permissions::SPACE_ROLES_V3).
+            with(Permissions::SPACE_ROLES_INCLUDING_APPLICATION_SUPPORTERS).
             and_return([space_guid])
-          allow(Membership).to receive(:new).with(user).and_return(membership)
-          allow(Space).to receive(:find).with(guid: space_guid).
-            and_return(space)
 
-          expect(permissions.readable_application_supporter_org_guids_for_domains).
+          expect(permissions.readable_org_guids_for_domains(include_application_supporters: true)).
             to contain_exactly(first_org_guid, second_org_guid)
         end
       end
@@ -711,6 +698,18 @@ module VCAP::CloudController
           org.add_user(user)
           space.add_developer(user)
           expect(permissions.can_write_to_space?(space_guid)).to be true
+        end
+
+        it 'returns false for space application supporter by default' do
+          org.add_user(user)
+          space.add_application_supporter(user)
+          expect(permissions.can_write_to_space?(space_guid)).to be false
+        end
+
+        it 'returns true for space application supporter when including application supporters' do
+          org.add_user(user)
+          space.add_application_supporter(user)
+          expect(permissions.can_write_to_space?(space_guid, include_application_supporters: true)).to be true
         end
 
         context "and the space's org is suspended" do
